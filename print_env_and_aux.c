@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-#define print_int_val(key, val) printf("%s: %ul\n", key, val)
+#define print_int_val(key, val) printf("%s: %lu\n", key, val)
 #define print_string_val(key, val) printf("%s: %s\n", key, (char *) val)
 
 static char *sarr[] =
