@@ -2,27 +2,21 @@
 #include <errno.h>
 #include <stdio.h>
 
-#define print_int_val(key, val) printf("%s: %lu\n", key, val)
-#define print_string_val(key, val) printf("%s: %s\n", key, (char *) val)
+#define ENTRY(NAME) { NAME, #NAME }
 
-static char *sarr[] =
-    { "AT_BASE", "AT_BASE_PLATFORM", "AT_CLKTCK", "AT_DCACHEBSIZE", "AT_EGID",
-    "AT_ENTRY", "AT_EUID", "AT_EXECFD", "AT_EXECFN", "AT_FPUCW", "AT_GID", "AT_HWCAP",
-    "AT_HWCAP2", "AT_ICACEBASESIZE", "AT_L1D_CACHEGEOMETRY", "AT_L1D_CACHESIZE",
-    "AT_L1I_CACHEGEOMETRY", "AT_L1I_CACHESIZE", "AT_L2_CACHEGEOMETRY",
-    "AT_L2_CACHESIZE", "AT_L3_CACHEGEOMETRY", "AT_L3_CACHESIZE", "AT_PAGESZ",
-    "AT_PHDR", "AT_PHENT", "AT_PHNUM", "AT_RANDOM", "AT_SECURE",
-    "AT_UCACHEBSIZE", "AT_UID", NULL
-};
+typedef struct {
+    unsigned long num;
+    char *name;
+} entry;
 
-static unsigned long arr[] =
-    { AT_BASE, AT_BASE_PLATFORM, AT_CLKTCK, AT_DCACHEBSIZE, AT_EGID,
-    AT_ENTRY, AT_EUID, AT_EXECFD, AT_EXECFN, AT_FPUCW, AT_GID, AT_HWCAP,
-    AT_HWCAP2, AT_ICACHEBSIZE, AT_L1D_CACHEGEOMETRY, AT_L1D_CACHESIZE,
-    AT_L1I_CACHEGEOMETRY, AT_L1I_CACHESIZE, AT_L2_CACHEGEOMETRY,
-    AT_L2_CACHESIZE, AT_L3_CACHEGEOMETRY, AT_L3_CACHESIZE, AT_PAGESZ,
-    AT_PHDR, AT_PHENT, AT_PHNUM, AT_RANDOM, AT_SECURE, AT_UCACHEBSIZE,
-    AT_UID, 0
+static entry arr[] =
+    { ENTRY(AT_BASE), ENTRY(AT_BASE_PLATFORM), ENTRY(AT_CLKTCK), ENTRY(AT_DCACHEBSIZE), ENTRY(AT_EGID),
+    ENTRY(AT_ENTRY), ENTRY(AT_EUID), ENTRY(AT_EXECFD), ENTRY(AT_EXECFN), ENTRY(AT_FPUCW), ENTRY(AT_GID), ENTRY(AT_HWCAP),
+    ENTRY(AT_HWCAP2), ENTRY(AT_ICACHEBSIZE), ENTRY(AT_L1D_CACHEGEOMETRY), ENTRY(AT_L1D_CACHESIZE),
+    ENTRY(AT_L1I_CACHEGEOMETRY), ENTRY(AT_L1I_CACHESIZE), ENTRY(AT_L2_CACHEGEOMETRY),
+    ENTRY(AT_L2_CACHESIZE), ENTRY(AT_L3_CACHEGEOMETRY), ENTRY(AT_L3_CACHESIZE), ENTRY(AT_PAGESZ),
+    ENTRY(AT_PHDR), ENTRY(AT_PHENT), ENTRY(AT_PHNUM), ENTRY(AT_RANDOM), ENTRY(AT_SECURE), ENTRY(AT_UCACHEBSIZE),
+    ENTRY(AT_UID), { 0, NULL }
 };
 
 int main(int argc, char *argv[])
@@ -36,21 +30,22 @@ int main(int argc, char *argv[])
     }
 
     puts("Aux:");
-    for (i = 0; sarr[i] != NULL; i++) {
-        val = getauxval(arr[i]);
+    for (i = 0; arr[i].name != NULL; i++) {
+        val = getauxval(arr[i].num);
         if ((0 == val) && (ENOENT == errno)) {
-            printf("%s not found.\n", sarr[i]);
+            printf("%s not found.\n", arr[i].name);
             continue;
         }
 
-        switch (arr[i]) {
+        switch (arr[i].num) {
         case AT_BASE_PLATFORM:
         case AT_EXECFN:
         case AT_PLATFORM:
-            print_string_val(sarr[i], val);
+           printf("%s: %s\n", arr[i].name, (char *) val);
             break;
         default:
-            print_int_val(sarr[i], val);
+           printf("%s: %lu\n", arr[i].name, val);
+           break;
         }
     }
 
